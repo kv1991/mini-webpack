@@ -1,1 +1,1 @@
-exports.default = function(a, b) {console.log(a + b)}
+export default (a, b) => { console.log(a + b) }
