@@ -16,7 +16,6 @@ function getModuleInfo(file) {
   const deps = {};
   traverse(ast, {
     ImportDeclaration({ node }) {
-      console.log('node: ', node);
       const dirname = path.dirname(file);
       const absPath = './' + path.join(dirname, node.source.value);
       deps[node.source.value] = absPath;
@@ -37,5 +36,33 @@ function getModuleInfo(file) {
   return moduleInfo;
 }
 
-const moduleInfo = getModuleInfo('./src/index.js');
-console.log('moduleInfo: ', moduleInfo);
+// const moduleInfo = getModuleInfo('./src/index.js');
+// console.log('moduleInfo: ', moduleInfo);
+
+function parseModules(file) {
+  const entry = getModuleInfo(file);
+  const depsGraph = {};
+  const tempModules = [entry];
+  getDeps(tempModules, entry);
+  tempModules.forEach(info => {
+    depsGraph[info.file] = {
+      deps: info.deps,
+      code: info.code
+    }
+  })
+  return depsGraph;
+}
+
+function getDeps(tempModules, { deps }) {
+  // console.log('deps: ', deps);
+  // console.log('tempModules: ', tempModules);
+  Object.keys(deps).forEach(dep => {
+    // console.log('dep: ', deps[dep]);
+    const nextModule = getModuleInfo(deps[dep]);
+    // console.log('nextModule: ', nextModule);
+    tempModules.push(nextModule);
+    getDeps(tempModules, nextModule);
+  })
+}
+
+console.log(parseModules('./src/index.js'));
