@@ -65,4 +65,19 @@ function getDeps(tempModules, { deps }) {
   })
 }
 
-console.log(parseModules('./src/index.js'));
+function bundle(entry) {
+  const file = JSON.stringify(parseModules(entry));
+  return `(function (fileMap) {
+    function require() {
+      let exports = {};
+      (function (exports, code) {
+        eval(code)
+      })(exports, filesMap[file].code)
+      return exports;
+    }
+    require(${entry});
+  })(${file})`
+}
+
+const content = bundle('./src/index.js');
+// console.log('content: ', content);
