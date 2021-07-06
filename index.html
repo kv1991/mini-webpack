@@ -1,0 +1,17 @@
+<script>
+  (function(filesMap) {
+    function require(file) {
+      let exports = {};
+      (function(exports, code) {
+        eval(code)
+      }) (exports, filesMap[file])
+      return exports;
+    };
+    require('index.js');
+  }) ({
+    'index.js': `var add = require('add.js').default;
+        console.log(add(1, 4));`,
+    'add.js': `exports.default = function(a, b) {return (a + b)}`
+  })
+
+</script>
