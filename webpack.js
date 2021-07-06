@@ -81,3 +81,6 @@ function bundle(entry) {
 
 const content = bundle('./src/index.js');
 // console.log('content: ', content);
+
+!fs.existsSync('./dist') && fs.mkdirSync('./dist');
+fs.writeFileSync('./dist/bundle.js', content);
