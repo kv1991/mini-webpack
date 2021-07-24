@@ -68,14 +68,17 @@ function getDeps(tempModules, { deps }) {
 function bundle(entry) {
   const file = JSON.stringify(parseModules(entry));
   return `(function (fileMap) {
-    function require() {
+    function require(file) {
+      function absRequire(relPath) {
+        return require(fileMap[file].deps[relPath])
+      }
       let exports = {};
-      (function (exports, code) {
+      (function (require, exports, code) {
         eval(code)
-      })(exports, filesMap[file].code)
+      })(absRequire, exports, fileMap[file].code)
       return exports;
     }
-    require(${entry});
+    require('${entry}');
   })(${file})`
 }
 
